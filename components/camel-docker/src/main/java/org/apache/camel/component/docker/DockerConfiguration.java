@@ -59,7 +59,9 @@ public class DockerConfiguration implements Cloneable {
     private boolean loggingFilter;
     @UriParam
     private boolean followRedirectFilter;
-
+    @UriParam
+    private boolean tlsVerify;
+    
     private Map<String, Object> parameters = new HashMap<String, Object>();
 
     public String getHost() {
@@ -234,5 +236,13 @@ public class DockerConfiguration implements Cloneable {
             throw new RuntimeCamelException(e);
         }
     }
+
+	public boolean isTlsVerify() {
+		return tlsVerify;
+	}
+
+	public void setTlsVerify(boolean tlsVerify) {
+		this.tlsVerify = tlsVerify;
+	}
 
 }

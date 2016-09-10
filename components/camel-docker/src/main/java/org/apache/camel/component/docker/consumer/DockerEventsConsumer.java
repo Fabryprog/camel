@@ -19,9 +19,6 @@ package org.apache.camel.component.docker.consumer;
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
 
-import com.github.dockerjava.api.command.EventCallback;
-import com.github.dockerjava.api.command.EventsCmd;
-import com.github.dockerjava.api.model.Event;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -35,10 +32,14 @@ import org.apache.camel.impl.DefaultConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.dockerjava.api.command.EventsCmd;
+import com.github.dockerjava.api.model.Event;
+import com.github.dockerjava.core.command.EventsResultCallback;
+
 /**
  * Docker Consumer for streaming events
  */
-public class DockerEventsConsumer extends DefaultConsumer implements EventCallback {
+public class DockerEventsConsumer extends DefaultConsumer {
 
     private static final transient Logger LOGGER = LoggerFactory.getLogger(DockerEventsConsumer.class);
 
@@ -50,11 +51,41 @@ public class DockerEventsConsumer extends DefaultConsumer implements EventCallba
 
     private ExecutorService eventsExecutorService;
 
+    private EventsResultCallback eventCallback;
+    
     public DockerEventsConsumer(DockerEndpoint endpoint, Processor processor) throws Exception {
         super(endpoint, processor);
         this.endpoint = endpoint;
         this.component = (DockerComponent) endpoint.getComponent();
+        
+        this.eventCallback = new EventsResultCallback() {
+            @Override
+            public void onNext(Event event) {
+            	LOGGER.debug("Received Docker Event: " + event);
 
+                final Exchange exchange = getEndpoint().createExchange();
+                Message message = exchange.getIn();
+                message.setBody(event);
+
+                try {
+                    LOGGER.trace("Processing exchange [{}]...", exchange);
+                    getAsyncProcessor().process(exchange, new AsyncCallback() {
+                        @Override
+                        public void done(boolean doneSync) {
+                            LOGGER.trace("Done processing exchange [{}]...", exchange);
+                        }
+                    });
+                } catch (Exception e) {
+                    exchange.setException(e);
+                }
+                if (exchange.getException() != null) {
+                    getExceptionHandler().handleException("Error processing exchange", exchange, exchange.getException());
+                }            	
+            	
+            	
+               super.onNext(event);
+            }
+        };
     }
 
     @Override
@@ -104,37 +135,6 @@ public class DockerEventsConsumer extends DefaultConsumer implements EventCallba
         super.doStop();
     }
 
-
-    @Override
-    public void onEvent(Event event) {
-
-        LOGGER.debug("Received Docker Event: " + event);
-
-        final Exchange exchange = getEndpoint().createExchange();
-        Message message = exchange.getIn();
-        message.setBody(event);
-
-        try {
-            LOGGER.trace("Processing exchange [{}]...", exchange);
-            getAsyncProcessor().process(exchange, new AsyncCallback() {
-                @Override
-                public void done(boolean doneSync) {
-                    LOGGER.trace("Done processing exchange [{}]...", exchange);
-                }
-            });
-        } catch (Exception e) {
-            exchange.setException(e);
-        }
-        if (exchange.getException() != null) {
-            getExceptionHandler().handleException("Error processing exchange", exchange, exchange.getException());
-        }
-
-    }
-
-    @Override
-    public void onException(Throwable throwable) {
-        LOGGER.error("Error Consuming from Docker Events: {}", throwable.getMessage());
-    }
 
     @Override
     public void onCompletion(int numEvents) {

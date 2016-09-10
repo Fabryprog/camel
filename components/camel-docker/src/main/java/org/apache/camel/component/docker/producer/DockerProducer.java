@@ -19,6 +19,21 @@ package org.apache.camel.component.docker.producer;
 import java.io.File;
 import java.io.InputStream;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
+import org.apache.camel.component.docker.DockerClientFactory;
+import org.apache.camel.component.docker.DockerComponent;
+import org.apache.camel.component.docker.DockerConfiguration;
+import org.apache.camel.component.docker.DockerConstants;
+import org.apache.camel.component.docker.DockerEndpoint;
+import org.apache.camel.component.docker.DockerHelper;
+import org.apache.camel.component.docker.DockerOperation;
+import org.apache.camel.component.docker.exception.DockerException;
+import org.apache.camel.impl.DefaultProducer;
+import org.apache.camel.util.ObjectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.AttachContainerCmd;
 import com.github.dockerjava.api.command.AuthCmd;
@@ -62,21 +77,6 @@ import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.api.model.Volumes;
 import com.github.dockerjava.api.model.VolumesFrom;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.component.docker.DockerClientFactory;
-import org.apache.camel.component.docker.DockerComponent;
-import org.apache.camel.component.docker.DockerConfiguration;
-import org.apache.camel.component.docker.DockerConstants;
-import org.apache.camel.component.docker.DockerEndpoint;
-import org.apache.camel.component.docker.DockerHelper;
-import org.apache.camel.component.docker.DockerOperation;
-import org.apache.camel.component.docker.exception.DockerException;
-import org.apache.camel.impl.DefaultProducer;
-import org.apache.camel.util.ObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The Docker producer.
  */
@@ -93,123 +93,128 @@ public class DockerProducer extends DefaultProducer {
 
     public void process(Exchange exchange) throws Exception {
 
-        DockerCmd<?> dockerCmd = null;
-
         Message message = exchange.getIn();
         DockerClient client = DockerClientFactory.getDockerClient(component, configuration, message);
 
         DockerOperation operation = configuration.getOperation();
-
+        
+        Object result = null;
+        		
         switch (operation) {
 
         /** General **/
         case AUTH:
-            dockerCmd = executeAuthRequest(client, message);
+        	result = executeAuthRequest(client, message).exec();
             break;
         case INFO:
-            dockerCmd = executeInfoRequest(client, message);
+            result = executeInfoRequest(client, message).exec();
             break;
         case PING:
-            dockerCmd = executePingRequest(client, message);
+            result = executePingRequest(client, message).exec();
             break;
         case VERSION:
-            dockerCmd = executeVersionRequest(client, message);
+            result = executeVersionRequest(client, message).exec();
             break;
 
         /** Images **/
         case BUILD_IMAGE:
-            dockerCmd = executeBuildImageRequest(client, message);
+//            result = executeBuildImageRequest(client, message).exec();
+        	//TODO
             break;
         case CREATE_IMAGE:
-            dockerCmd = executeCreateImageRequest(client, message);
+            result = executeCreateImageRequest(client, message).exec();
             break;
         case INSPECT_IMAGE:
-            dockerCmd = executeInspectImageRequest(client, message);
+            result = executeInspectImageRequest(client, message).exec();
             break;
         case LIST_IMAGES:
-            dockerCmd = executeListImagesRequest(client, message);
+            result = executeListImagesRequest(client, message).exec();
             break;
         case PULL_IMAGE:
-            dockerCmd = executePullImageRequest(client, message);
+//            result = executePullImageRequest(client, message).exec();
+        	//TODO
             break;
         case PUSH_IMAGE:
-            dockerCmd = executePushImageRequest(client, message);
+//            result = executePushImageRequest(client, message).exec();
+        	//TODO
             break;
         case REMOVE_IMAGE:
-            dockerCmd = executeRemoveImageRequest(client, message);
+            result = executeRemoveImageRequest(client, message).exec();
             break;
         case SEARCH_IMAGES:
-            dockerCmd = executeSearchImageRequest(client, message);
+            result = executeSearchImageRequest(client, message).exec();
             break;
         case TAG_IMAGE:
-            dockerCmd = executeTagImageRequest(client, message);
+            result = executeTagImageRequest(client, message).exec();
             break;
 
         /** Containers **/
         case ATTACH_CONTAINER:
-            dockerCmd = executeAttachContainerRequest(client, message);
+//            result = executeAttachContainerRequest(client, message).exec();
+        	//TODO
             break;
         case COMMIT_CONTAINER:
-            dockerCmd = executeCommitContainerRequest(client, message);
+            result = executeCommitContainerRequest(client, message).exec();
             break;
         case COPY_FILE_CONTAINER:
-            dockerCmd = executeCopyFileContainerRequest(client, message);
+            result = executeCopyFileContainerRequest(client, message).exec();
             break;
         case CREATE_CONTAINER:
-            dockerCmd = executeCreateContainerRequest(client, message);
+            result = executeCreateContainerRequest(client, message).exec();
             break;
         case DIFF_CONTAINER:
-            dockerCmd = executeDiffContainerRequest(client, message);
+            result = executeDiffContainerRequest(client, message).exec();
             break;
         case INSPECT_CONTAINER:
-            dockerCmd = executeInspectContainerRequest(client, message);
+            result = executeInspectContainerRequest(client, message).exec();
             break;
         case LIST_CONTAINERS:
-            dockerCmd = executeListContainersRequest(client, message);
+            result = executeListContainersRequest(client, message).exec();
             break;
         case LOG_CONTAINER:
-            dockerCmd = executeLogContainerRequest(client, message);
+//            result = executeLogContainerRequest(client, message).exec();
+        	//TODO
             break;
         case KILL_CONTAINER:
-            dockerCmd = executeKillContainerRequest(client, message);
+            result = executeKillContainerRequest(client, message).exec();
             break;
         case PAUSE_CONTAINER:
-            dockerCmd = executePauseContainerRequest(client, message);
+            result = executePauseContainerRequest(client, message).exec();
             break;
         case REMOVE_CONTAINER:
-            dockerCmd = executeRemoveContainerRequest(client, message);
+            result = executeRemoveContainerRequest(client, message).exec();
             break;
         case RESTART_CONTAINER:
-            dockerCmd = executeRestartContainerRequest(client, message);
+            result = executeRestartContainerRequest(client, message).exec();
             break;
         case START_CONTAINER:
-            dockerCmd = executeStartContainerRequest(client, message);
+            result = executeStartContainerRequest(client, message).exec();
             break;
         case STOP_CONTAINER:
-            dockerCmd = executeStopContainerRequest(client, message);
+            result = executeStopContainerRequest(client, message).exec();
             break;
         case TOP_CONTAINER:
-            dockerCmd = executeTopContainerRequest(client, message);
+            result = executeTopContainerRequest(client, message).exec();
             break;
         case UNPAUSE_CONTAINER:
-            dockerCmd = executeUnpauseContainerRequest(client, message);
+            result = executeUnpauseContainerRequest(client, message).exec();
             break;
         case WAIT_CONTAINER:
-            dockerCmd = executeWaitContainerRequest(client, message);
+//            result = executeWaitContainerRequest(client, message).exec();
+        	//TODO
             break;
 
         /** Exec **/
         case EXEC_CREATE:
-            dockerCmd = executeExecCreateRequest(client, message);
+            result = executeExecCreateRequest(client, message).exec();
             break;
         case EXEC_START:
-            dockerCmd = executeExecStartRequest(client, message);
+//            result = executeExecStartRequest(client, message).exec();
+        	//TODO
             break;
         default:
             throw new DockerException("Invalid operation: " + operation);
         }
-
-        Object result = dockerCmd.exec();
 
         // If request included a response, set as body
         if (result != null) {
@@ -416,7 +421,7 @@ public class DockerProducer extends DefaultProducer {
         String filter = DockerHelper.getProperty(DockerConstants.DOCKER_FILTER, configuration, message, String.class);
 
         if (filter != null) {
-            listImagesCmd.withFilters(filter);
+            listImagesCmd.withLabelFilter(filter);
         }
 
         Boolean showAll = DockerHelper.getProperty(DockerConstants.DOCKER_SHOW_ALL, configuration, message, Boolean.class);
@@ -521,7 +526,7 @@ public class DockerProducer extends DefaultProducer {
         Boolean force = DockerHelper.getProperty(DockerConstants.DOCKER_FORCE, configuration, message, Boolean.class);
 
         if (force != null) {
-            removeImagesCmd.withForce();
+            removeImagesCmd.withForce(force);
         }
 
         Boolean noPrune = DockerHelper.getProperty(DockerConstants.DOCKER_NO_PRUNE, configuration, message, Boolean.class);
@@ -941,7 +946,7 @@ public class DockerProducer extends DefaultProducer {
         Long memoryLimit = DockerHelper.getProperty(DockerConstants.DOCKER_MEMORY_LIMIT, configuration, message, Long.class);
 
         if (memoryLimit != null) {
-            createContainerCmd.withMemoryLimit(memoryLimit);
+            createContainerCmd.withMemory(memoryLimit);
         }
 
         Long memorySwap = DockerHelper.getProperty(DockerConstants.DOCKER_MEMORY_SWAP, configuration, message, Long.class);

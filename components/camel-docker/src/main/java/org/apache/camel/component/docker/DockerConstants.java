@@ -28,6 +28,8 @@ public final class DockerConstants {
 
     public static final Map<String, Class<?>> DOCKER_DEFAULT_PARAMETERS = new HashMap<String, Class<?>>();
 
+    public static final String API_VERSION = "1.24"; //docker 1.12.x
+    
     /**
      * Connectivity *
      */
@@ -45,7 +47,7 @@ public final class DockerConstants {
     public static final String DOCKER_SECURE = "CamelDockerSecure";
     public static final String DOCKER_FOLLOW_REDIRECT_FILTER = "CamelDockerFollowRedirectFilter";
     public static final String DOCKER_LOGGING_FILTER = "CamelDockerLoggingFilter";
-
+    public static final String DOCKER_TLS_VERIFY = "CamelDockerTLSVerify";
     /**
      * List Images *
      */

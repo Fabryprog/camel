@@ -18,10 +18,6 @@ package org.apache.camel.component.docker.consumer;
 
 import java.util.concurrent.ExecutorService;
 
-import com.github.dockerjava.api.command.StatsCallback;
-import com.github.dockerjava.api.command.StatsCmd;
-import com.github.dockerjava.api.model.Statistics;
-
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -34,6 +30,10 @@ import org.apache.camel.component.docker.DockerHelper;
 import org.apache.camel.impl.DefaultConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.dockerjava.api.command.StatsCallback;
+import com.github.dockerjava.api.command.StatsCmd;
+import com.github.dockerjava.api.model.Statistics;
 
 /**
  * Docker Consumer for streaming statistical events
