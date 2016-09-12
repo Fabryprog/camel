@@ -19,8 +19,6 @@ package org.apache.camel.component.docker;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
-import org.apache.camel.component.docker.consumer.DockerEventsConsumer;
-import org.apache.camel.component.docker.consumer.DockerStatsConsumer;
 import org.apache.camel.component.docker.exception.DockerException;
 import org.apache.camel.component.docker.producer.DockerProducer;
 import org.apache.camel.impl.DefaultEndpoint;
@@ -30,8 +28,7 @@ import org.apache.camel.spi.UriParam;
 /**
  * The docker component is used for managing Docker containers.
  */
-@UriEndpoint(scheme = "docker", title = "Docker", syntax = "docker:operation", consumerClass = DockerEventsConsumer.class,
-        label = "container,cloud,paas", lenientProperties = true)
+@UriEndpoint(scheme = "docker", title = "Docker", syntax = "docker:operation", label = "container,cloud,paas", lenientProperties = true)
 public class DockerEndpoint extends DefaultEndpoint {
 
     @UriParam
@@ -60,17 +57,7 @@ public class DockerEndpoint extends DefaultEndpoint {
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {
-
-        DockerOperation operation = configuration.getOperation();
-
-        switch (operation) {
-        case EVENTS:
-            return new DockerEventsConsumer(this, processor);
-        case STATS:
-            return new DockerStatsConsumer(this, processor);
-        default:
-            throw new DockerException(operation + " is not a valid consumer operation");
-        }
+        throw new DockerException("docker consumer is not supported yet");
     }
 
     public boolean isSingleton() {
