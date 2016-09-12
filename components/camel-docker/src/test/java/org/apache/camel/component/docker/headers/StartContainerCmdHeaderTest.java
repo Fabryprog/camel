@@ -27,10 +27,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Start Container Request headers are applied properly
  */
+@PowerMockIgnore("javax.management.*")
 public class StartContainerCmdHeaderTest extends BaseDockerHeaderTest<StartContainerCmd> {
 
     @Mock

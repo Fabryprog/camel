@@ -24,10 +24,12 @@ import org.apache.camel.component.docker.DockerOperation;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Info Request headers are parsed properly
  */
+@PowerMockIgnore("javax.management.*")
 public class InfoCmdHeaderTest extends BaseDockerHeaderTest<InfoCmd> {
 
     @Mock

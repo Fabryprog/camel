@@ -26,10 +26,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Restart Container Request headers are applied properly
  */
+@PowerMockIgnore("javax.management.*")
 public class RestartContainerCmdHeaderTest extends BaseDockerHeaderTest<RestartContainerCmd> {
 
     @Mock

@@ -26,10 +26,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Container Diff Request headers are parsed properly
  */
+@PowerMockIgnore("javax.management.*")
 public class DiffContainerCmdHeaderTest extends BaseDockerHeaderTest<ContainerDiffCmd> {
 
     @Mock

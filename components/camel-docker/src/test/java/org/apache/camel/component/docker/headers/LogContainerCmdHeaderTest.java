@@ -26,10 +26,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Log Container Request headers are applied properly
  */
+@PowerMockIgnore("javax.management.*")
 public class LogContainerCmdHeaderTest extends BaseDockerHeaderTest<LogContainerCmd> {
 
     @Mock

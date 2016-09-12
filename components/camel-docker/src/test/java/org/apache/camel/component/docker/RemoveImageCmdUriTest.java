@@ -27,10 +27,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Remove Image Request URI parameters are applied properly
  */
+@PowerMockIgnore("javax.management.*")
 public class RemoveImageCmdUriTest extends BaseDockerHeaderTest<RemoveImageCmd> {
 
     private String imageId = "be29975e0098";

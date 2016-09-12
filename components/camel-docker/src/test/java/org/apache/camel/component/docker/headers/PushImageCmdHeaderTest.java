@@ -27,10 +27,12 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 /**
  * Validates Push Image Request headers are applied properly
  */
+@PowerMockIgnore("javax.management.*")
 public class PushImageCmdHeaderTest extends BaseDockerHeaderTest<PushImageCmd> {
 
     @Mock
