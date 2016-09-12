@@ -126,18 +126,6 @@ public class DockerProducer extends DefaultProducer {
         case VERSION:
             result = executeVersionRequest(client, message).exec();
             break;
-
-        /** Images **/
-        case BUILD_IMAGE:
-        	//result contain an image id value
-        	result = executeBuildImageRequest(client, message).exec(new BuildImageResultCallback() {
-        	    @Override
-        	    public void onNext(BuildResponseItem item) {
-        	    	log.trace("build image callback {}", item);
-        	    	super.onNext(item);
-        	    }
-        	}).awaitImageId();
-            break;
         case CREATE_IMAGE:
             result = executeCreateImageRequest(client, message).exec();
             break;
@@ -147,24 +135,6 @@ public class DockerProducer extends DefaultProducer {
         case LIST_IMAGES:
             result = executeListImagesRequest(client, message).exec();
             break;
-        case PULL_IMAGE:
-        	result = executePullImageRequest(client, message).exec(new PullImageResultCallback() {
-        		@Override
-        		public void onNext(PullResponseItem item) {
-        	    	log.trace("pull image callback {}", item);
-        			super.onNext(item);
-        		}
-        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
-            break;
-        case PUSH_IMAGE:
-        	result = executePushImageRequest(client, message).exec(new PushImageResultCallback() {
-        		@Override
-        		public void onNext(PushResponseItem item) {
-        	    	log.trace("push image callback {}", item);
-        			super.onNext(item);
-        		}
-        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
-            break;
         case REMOVE_IMAGE:
             result = executeRemoveImageRequest(client, message).exec();
             break;
@@ -173,19 +143,6 @@ public class DockerProducer extends DefaultProducer {
             break;
         case TAG_IMAGE:
             result = executeTagImageRequest(client, message).exec();
-            break;
-
-        /** Containers **/
-        case ATTACH_CONTAINER:
-        	result = executeAttachContainerRequest(client, message).exec(new AttachContainerResultCallback() {
-        		@Override
-        		public void onNext(Frame item) {
-        	    	log.trace("attach container callback {}", item);
-        			super.onNext(item);
-        		}
-        	
-        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
-        	
             break;
         case COMMIT_CONTAINER:
             result = executeCommitContainerRequest(client, message).exec();
@@ -204,17 +161,6 @@ public class DockerProducer extends DefaultProducer {
             break;
         case LIST_CONTAINERS:
             result = executeListContainersRequest(client, message).exec();
-            break;
-        case LOG_CONTAINER:
-        	result = executeLogContainerRequest(client, message).exec(new LogContainerResultCallback() {
-        		@Override
-        		public void onNext(Frame item) {
-        	    	log.trace("log container callback {}", item);
-        			super.onNext(item);
-        		}
-        	
-        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
-        	
             break;
         case KILL_CONTAINER:
             result = executeKillContainerRequest(client, message).exec();
@@ -240,29 +186,8 @@ public class DockerProducer extends DefaultProducer {
         case UNPAUSE_CONTAINER:
             result = executeUnpauseContainerRequest(client, message).exec();
             break;
-        case WAIT_CONTAINER:
-        	//result contain a status code value
-        	result = executeWaitContainerRequest(client, message).exec(new WaitContainerResultCallback() {
-        		@Override
-        		public void onNext(WaitResponse item) {
-        	    	log.trace("wait contanier callback {}", item);
-        			super.onNext(item);
-        		}
-        	
-        	}).awaitStatusCode();
-            break;
         case EXEC_CREATE:
             result = executeExecCreateRequest(client, message).exec();
-            break;
-        case EXEC_START:
-        	result = executeExecStartRequest(client, message).exec(new ExecStartResultCallback() {
-        		@Override
-        		public void onNext(Frame item) {
-        	    	log.trace("exec start callback {}", item);
-        			super.onNext(item);
-        		}
-        	
-        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
             break;
         default:
             throw new DockerException("Invalid operation: " + operation);
@@ -358,59 +283,6 @@ public class DockerProducer extends DefaultProducer {
      ********************/
 
     /**
-     * Produces a build image request
-     *
-     * @param client
-     * @param message
-     * @return
-     * @throws DockerException
-     */
-    private BuildImageCmd executeBuildImageRequest(DockerClient client, Message message) throws DockerException {
-
-        LOGGER.debug("Executing Docker Build Image Request");
-
-        Object body = message.getBody();
-
-        BuildImageCmd buildImageCmd;
-
-        if (body != null && body instanceof InputStream) {
-            buildImageCmd = client.buildImageCmd((InputStream) body);
-        } else if (body != null && body instanceof File) {
-            buildImageCmd = client.buildImageCmd((File) body);
-        } else {
-            throw new DockerException("Unable to location source Image");
-        }
-
-        Boolean noCache = DockerHelper.getProperty(DockerConstants.DOCKER_NO_CACHE, configuration, message, Boolean.class);
-
-        if (noCache != null) {
-            buildImageCmd.withNoCache(noCache);
-        }
-
-        Boolean quiet = DockerHelper.getProperty(DockerConstants.DOCKER_QUIET, configuration, message, Boolean.class);
-
-        if (quiet != null) {
-            buildImageCmd.withQuiet(quiet);
-        }
-
-        Boolean remove = DockerHelper.getProperty(DockerConstants.DOCKER_REMOVE, configuration, message, Boolean.class);
-
-        if (remove != null) {
-            buildImageCmd.withRemove(remove);
-        }
-
-        String tag = DockerHelper.getProperty(DockerConstants.DOCKER_TAG, configuration, message, String.class);
-
-        if (tag != null) {
-            buildImageCmd.withTag(tag);
-        }
-
-        return buildImageCmd;
-
-    }
-
-
-    /**
      * Performs a create image request
      *
      * @param client
@@ -487,76 +359,6 @@ public class DockerProducer extends DefaultProducer {
     }
 
 
-    /**
-     * Produces a pull image request
-     *
-     * @param client
-     * @param message
-     * @return
-     */
-    private PullImageCmd executePullImageRequest(DockerClient client, Message message) {
-
-        LOGGER.debug("Executing Docker Pull Image Request");
-
-        String repository = DockerHelper.getProperty(DockerConstants.DOCKER_REPOSITORY, configuration, message, String.class);
-
-        ObjectHelper.notNull(repository, "Repository must be specified");
-
-        PullImageCmd pullImageCmd = client.pullImageCmd(repository);
-
-        String registry = DockerHelper.getProperty(DockerConstants.DOCKER_REGISTRY, configuration, message, String.class);
-        if (registry != null) {
-            pullImageCmd.withRegistry(registry);
-        }
-
-        String tag = DockerHelper.getProperty(DockerConstants.DOCKER_TAG, configuration, message, String.class);
-        if (tag != null) {
-            pullImageCmd.withTag(tag);
-        }
-
-        AuthConfig authConfig = client.authConfig();
-
-        if (authConfig != null) {
-            pullImageCmd.withAuthConfig(authConfig);
-        }
-
-        return pullImageCmd;
-
-    }
-
-
-    /**
-     * Produces a push image request
-     *
-     * @param client
-     * @param message
-     * @return
-     */
-    private PushImageCmd executePushImageRequest(DockerClient client, Message message) {
-
-        LOGGER.debug("Executing Docker Push Image Request");
-
-        String name = DockerHelper.getProperty(DockerConstants.DOCKER_NAME, configuration, message, String.class);
-
-        ObjectHelper.notNull(name, "Image name must be specified");
-
-        PushImageCmd pushImageCmd = client.pushImageCmd(name);
-
-        String tag = DockerHelper.getProperty(DockerConstants.DOCKER_TAG, configuration, message, String.class);
-
-        if (tag != null) {
-            pushImageCmd.withTag(tag);
-        }
-
-        AuthConfig authConfig = client.authConfig();
-
-        if (authConfig != null) {
-            pushImageCmd.withAuthConfig(authConfig);
-        }
-
-        return pushImageCmd;
-
-    }
 
     /**
      * Produces a remove image request
@@ -651,58 +453,6 @@ public class DockerProducer extends DefaultProducer {
     /*********************
      * Container Requests
      ********************/
-
-    /**
-     * Produce a attach container request
-     *
-     * @param client
-     * @param message
-     * @return
-     */
-    private AttachContainerCmd executeAttachContainerRequest(DockerClient client, Message message) {
-
-        LOGGER.debug("Executing Docker Attach Container Request");
-
-        String containerId = DockerHelper.getProperty(DockerConstants.DOCKER_CONTAINER_ID, configuration, message, String.class);
-
-        ObjectHelper.notNull(containerId, "Container ID must be specified");
-
-        AttachContainerCmd attachContainerCmd = client.attachContainerCmd(containerId);
-
-        Boolean followStream = DockerHelper.getProperty(DockerConstants.DOCKER_FOLLOW_STREAM, configuration, message, Boolean.class);
-
-        if (followStream != null) {
-            attachContainerCmd.withFollowStream(followStream);
-        }
-
-        Boolean logs = DockerHelper.getProperty(DockerConstants.DOCKER_LOGS, configuration, message, Boolean.class);
-
-        if (logs != null) {
-            attachContainerCmd.withLogs(logs);
-        }
-
-        Boolean stdErr = DockerHelper.getProperty(DockerConstants.DOCKER_STD_ERR, configuration, message, Boolean.class);
-
-        if (stdErr != null) {
-            attachContainerCmd.withStdErr(stdErr);
-        }
-
-        Boolean stdOut = DockerHelper.getProperty(DockerConstants.DOCKER_STD_OUT, configuration, message, Boolean.class);
-
-        if (stdOut != null) {
-            attachContainerCmd.withStdOut(stdOut);
-        }
-
-
-        Boolean timestamps = DockerHelper.getProperty(DockerConstants.DOCKER_TIMESTAMPS, configuration, message, Boolean.class);
-
-        if (timestamps != null) {
-            attachContainerCmd.withTimestamps(timestamps);
-        }
-
-        return attachContainerCmd;
-
-    }
 
     /**
      * Produces a commit container request
@@ -1189,63 +939,6 @@ public class DockerProducer extends DefaultProducer {
     }
 
     /**
-     * Produce a log container request
-     *
-     * @param client
-     * @param message
-     * @return
-     */
-    private LogContainerCmd executeLogContainerRequest(DockerClient client, Message message) {
-
-        LOGGER.debug("Executing Docker Log Container Request");
-
-        String containerId = DockerHelper.getProperty(DockerConstants.DOCKER_CONTAINER_ID, configuration, message, String.class);
-
-        ObjectHelper.notNull(containerId, "Container ID must be specified");
-
-        LogContainerCmd logContainerCmd = client.logContainerCmd(containerId);
-
-        Boolean followStream = DockerHelper.getProperty(DockerConstants.DOCKER_FOLLOW_STREAM, configuration, message, Boolean.class);
-
-        if (followStream != null) {
-            logContainerCmd.withFollowStream(followStream);
-        }
-
-        Boolean stdErr = DockerHelper.getProperty(DockerConstants.DOCKER_STD_ERR, configuration, message, Boolean.class);
-
-        if (stdErr != null) {
-            logContainerCmd.withStdErr(stdErr);
-        }
-
-        Boolean stdOut = DockerHelper.getProperty(DockerConstants.DOCKER_STD_OUT, configuration, message, Boolean.class);
-
-        if (stdOut != null) {
-            logContainerCmd.withStdOut(stdOut);
-        }
-
-        Integer tail = DockerHelper.getProperty(DockerConstants.DOCKER_TAIL, configuration, message, Integer.class);
-
-        if (tail != null) {
-            logContainerCmd.withTail(tail);
-        }
-
-        Boolean tailAll = DockerHelper.getProperty(DockerConstants.DOCKER_TAIL_ALL, configuration, message, Boolean.class);
-
-        if (tailAll != null && tailAll) {
-            logContainerCmd.withTailAll();
-        }
-
-        Boolean timestamps = DockerHelper.getProperty(DockerConstants.DOCKER_TIMESTAMPS, configuration, message, Boolean.class);
-
-        if (timestamps != null) {
-            logContainerCmd.withTimestamps(timestamps);
-        }
-
-        return logContainerCmd;
-
-    }
-
-    /**
      * Produces a pause container request
      *
      * @param client
@@ -1419,29 +1112,6 @@ public class DockerProducer extends DefaultProducer {
 
     }
 
-
-    /**
-     * Produce a wait container request
-     *
-     * @param client
-     * @param message
-     * @return
-     */
-    private WaitContainerCmd executeWaitContainerRequest(DockerClient client, Message message) {
-
-        LOGGER.debug("Executing Docker Wait Container Request");
-
-        String containerId = DockerHelper.getProperty(DockerConstants.DOCKER_CONTAINER_ID, configuration, message, String.class);
-
-        ObjectHelper.notNull(containerId, "Container ID must be specified");
-
-        WaitContainerCmd waitContainerCmd = client.waitContainerCmd(containerId);
-
-        return waitContainerCmd;
-
-    }
-
-
     /*********************
      * Exec Requests
      ********************/
@@ -1495,39 +1165,6 @@ public class DockerProducer extends DefaultProducer {
         }
 
         return execCreateCmd;
-
-    }
-
-    /**
-     * Produces a exec start request
-     *
-     * @param client
-     * @param message
-     * @return
-     */
-    private ExecStartCmd executeExecStartRequest(DockerClient client, Message message) {
-
-        LOGGER.debug("Executing Docker Exec Create Request");
-
-        String execId = DockerHelper.getProperty(DockerConstants.DOCKER_EXEC_ID, configuration, message, String.class);
-
-        ObjectHelper.notNull(execId, "Exec ID must be specified");
-
-        ExecStartCmd execStartCmd = client.execStartCmd(execId);
-
-        Boolean detach = DockerHelper.getProperty(DockerConstants.DOCKER_DETACH, configuration, message, Boolean.class);
-
-        if (detach != null) {
-            execStartCmd.withDetach(detach);
-        }
-
-        Boolean tty = DockerHelper.getProperty(DockerConstants.DOCKER_TTY, configuration, message, Boolean.class);
-
-        if (tty != null) {
-            execStartCmd.withTty(tty);
-        }
-
-        return execStartCmd;
 
     }
 

@@ -19,9 +19,9 @@ package org.apache.camel.component.docker.headers;
 import java.util.Map;
 
 import com.github.dockerjava.api.command.AttachContainerCmd;
-
 import org.apache.camel.component.docker.DockerConstants;
 import org.apache.camel.component.docker.DockerOperation;
+import org.apache.camel.component.docker.producer.DockerProducer;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -36,7 +36,7 @@ public class AttachContainerCmdHeaderTest extends BaseDockerHeaderTest<AttachCon
 
     @Mock
     private AttachContainerCmd mockObject;
-
+    
     @Test
     public void attachContainerHeaderTest() {
 
