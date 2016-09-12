@@ -53,6 +53,8 @@ public class DockerClientProfile {
     
     private Boolean followRedirectFilterEnabled;
 
+    private Boolean tlsVerify;
+    
     public String getHost() {
         return host;
     }
@@ -297,6 +299,14 @@ public class DockerClientProfile {
             return false;
         }
         return true;
-    }    
+    }
+
+	public Boolean isTlsVerify() {
+		return tlsVerify;
+	}
+
+	public void setTlsVerify(Boolean tlsVerify) {
+		this.tlsVerify = tlsVerify;
+	}    
 
 }
