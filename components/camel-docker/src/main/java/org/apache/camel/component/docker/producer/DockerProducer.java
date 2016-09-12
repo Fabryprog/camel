@@ -154,7 +154,7 @@ public class DockerProducer extends DefaultProducer {
         	    	log.trace("pull image callback {}", item);
         			super.onNext(item);
         		}
-        	}).awaitCompletion();
+        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
             break;
         case PUSH_IMAGE:
         	result = executePushImageRequest(client, message).exec(new PushImageResultCallback() {
@@ -163,7 +163,7 @@ public class DockerProducer extends DefaultProducer {
         	    	log.trace("push image callback {}", item);
         			super.onNext(item);
         		}
-        	}).awaitCompletion();
+        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
             break;
         case REMOVE_IMAGE:
             result = executeRemoveImageRequest(client, message).exec();
@@ -184,7 +184,7 @@ public class DockerProducer extends DefaultProducer {
         			super.onNext(item);
         		}
         	
-        	}).awaitCompletion();
+        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
         	
             break;
         case COMMIT_CONTAINER:
@@ -213,7 +213,7 @@ public class DockerProducer extends DefaultProducer {
         			super.onNext(item);
         		}
         	
-        	}).awaitCompletion();
+        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
         	
             break;
         case KILL_CONTAINER:
@@ -262,7 +262,7 @@ public class DockerProducer extends DefaultProducer {
         			super.onNext(item);
         		}
         	
-        	}).awaitCompletion();
+        	}).awaitCompletion(1, java.util.concurrent.TimeUnit.MINUTES);
             break;
         default:
             throw new DockerException("Invalid operation: " + operation);
