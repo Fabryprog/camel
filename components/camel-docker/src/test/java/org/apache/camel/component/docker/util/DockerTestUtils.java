@@ -53,7 +53,7 @@ public final class DockerTestUtils {
         clientProfile.setMaxTotalConnections(dockerConfiguration.getMaxTotalConnections());
         clientProfile.setLoggingFilter(false);
         clientProfile.setFollowRedirectFilter(false);
-        clientProfile.setSecure(false);
+        clientProfile.setSocket(false);
         return clientProfile;
 
     }

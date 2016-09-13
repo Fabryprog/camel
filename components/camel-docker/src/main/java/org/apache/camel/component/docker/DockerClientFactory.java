@@ -20,18 +20,22 @@ import org.apache.camel.Message;
 import org.apache.camel.component.docker.exception.DockerException;
 import org.apache.camel.component.docker.ssl.NoImplSslConfig;
 import org.apache.camel.util.ObjectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.command.DockerCmdExecFactory;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.LocalDirectorySSLConfig;
 import com.github.dockerjava.core.SSLConfig;
+import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 
 /**
  * Methods for communicating with Docker
  */
 public final class DockerClientFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockerClientFactory.class);
 
     private DockerClientFactory() {
         // Helper class
@@ -61,7 +65,7 @@ public final class DockerClientFactory {
                                                           dockerConfiguration.getRequestTimeout());
         String serverAddress = DockerHelper.getProperty(DockerConstants.DOCKER_SERVER_ADDRESS, dockerConfiguration, message, String.class, dockerConfiguration.getServerAddress());
         String certPath = DockerHelper.getProperty(DockerConstants.DOCKER_CERT_PATH, dockerConfiguration, message, String.class, dockerConfiguration.getCertPath());
-        Boolean secure = DockerHelper.getProperty(DockerConstants.DOCKER_SECURE, dockerConfiguration, message, Boolean.class, dockerConfiguration.isSecure());
+        Boolean socket = DockerHelper.getProperty(DockerConstants.DOCKER_SOCKET, dockerConfiguration, message, Boolean.class, dockerConfiguration.isSocket());
         Boolean loggingFilter = DockerHelper.getProperty(DockerConstants.DOCKER_LOGGING_FILTER, dockerConfiguration, message, Boolean.class, dockerConfiguration.isLoggingFilterEnabled());
         Boolean followRedirectFilter = DockerHelper.getProperty(DockerConstants.DOCKER_FOLLOW_REDIRECT_FILTER, dockerConfiguration, message, 
                 Boolean.class, dockerConfiguration.isFollowRedirectFilterEnabled());
@@ -79,7 +83,7 @@ public final class DockerClientFactory {
         clientProfile.setCertPath(certPath);
         clientProfile.setMaxTotalConnections(maxTotalConnections);
         clientProfile.setMaxPerRouteConnections(maxPerRouteConnections);
-        clientProfile.setSecure(secure);
+        clientProfile.setSocket(socket);
         clientProfile.setFollowRedirectFilter(followRedirectFilter);
         clientProfile.setLoggingFilter(loggingFilter);
         clientProfile.setTlsVerify(tlsVerify);
@@ -90,45 +94,30 @@ public final class DockerClientFactory {
             return client;
         }
 
-        SSLConfig sslConfig;
-        if (clientProfile.isSecure() != null && clientProfile.isSecure()) {
-            ObjectHelper.notNull(clientProfile.getCertPath(), "certPath must be specified in secure mode");
-            sslConfig = new LocalDirectorySSLConfig(clientProfile.getCertPath());
-        } else {
-            // docker-java requires an implementation of SslConfig interface
-            // to be available for DockerCmdExecFactoryImpl
-            sslConfig = new NoImplSslConfig();
-        }
+        DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
+        		  .withDockerHost(clientProfile.toUrl())
+        		  .withDockerTlsVerify(clientProfile.isTlsVerify())
+        		  .withDockerCertPath(clientProfile.getCertPath())
+        		  .withRegistryUsername(clientProfile.getUsername())
+        		  .withRegistryPassword(clientProfile.getPassword())
+        		  .withRegistryEmail(clientProfile.getEmail())
+        		  .withRegistryUrl(clientProfile.getServerAddress())
+        		  .build();
 
-        /*
-         * tolti: getMaxPerRouteConnections getRequestTimeout toUrl getMaxTotalConnections
-         * isFollowRedirectFilterEnabled isLoggingFilterEnabled
-         */
-         
-        
-        DefaultDockerClientConfig.Builder configBuilder = DefaultDockerClientConfig.createDefaultConfigBuilder()
-        	    .withDockerHost(clientProfile.getHost())
-        	    .withDockerTlsVerify(clientProfile.isTlsVerify())
-        	    .withDockerCertPath(clientProfile.getCertPath())
-        	    .withDockerConfig("/home/user/.docker")
-        	    .withApiVersion(DockerConstants.API_VERSION)
-        	    .withRegistryUrl(clientProfile.getServerAddress())
-        	    .withRegistryUsername(clientProfile.getUsername())
-        	    .withRegistryPassword(clientProfile.getPassword())
-        	    .withRegistryEmail(clientProfile.getEmail())
-        	    .withCustomSslConfig(sslConfig);
-        
-        if (clientProfile.getCertPath() != null) {
-        	configBuilder.withDockerCertPath(clientProfile.getCertPath());
-        }
-        
-        DockerClientConfig config = configBuilder.build();
-        
-        client = DockerClientBuilder.getInstance(config).build();
+		// using jaxrs/jersey implementation here (netty impl is also available)
+		DockerCmdExecFactory dockerCmdExecFactory = new JerseyDockerCmdExecFactory()
+		  .withReadTimeout(clientProfile.getRequestTimeout())
+		  .withConnectTimeout(clientProfile.getRequestTimeout())
+		  .withMaxTotalConnections(clientProfile.getMaxTotalConnections())
+		  .withMaxPerRouteConnections(clientProfile.getMaxPerRouteConnections());
 
-        dockerComponent.setClient(clientProfile, client);
-
-        return client;
+		LOGGER.info("Docker clientProfile {}", clientProfile);
+		
+		client = DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(dockerCmdExecFactory).build();
+		
+		dockerComponent.setClient(clientProfile, client);
+        
+		return client;
     }
 
 }

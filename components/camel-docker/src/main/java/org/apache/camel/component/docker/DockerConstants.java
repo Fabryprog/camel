@@ -44,7 +44,7 @@ public final class DockerConstants {
     public static final String DOCKER_PORT = "CamelDockerPort";
     public static final String DOCKER_MAX_PER_ROUTE_CONNECTIONS = "CamelDockerMaxPerRouteConnections";
     public static final String DOCKER_MAX_TOTAL_CONNECTIONS = "CamelDockerMaxTotalConnections";
-    public static final String DOCKER_SECURE = "CamelDockerSecure";
+    public static final String DOCKER_SOCKET = "CamelDockerSocket";
     public static final String DOCKER_FOLLOW_REDIRECT_FILTER = "CamelDockerFollowRedirectFilter";
     public static final String DOCKER_LOGGING_FILTER = "CamelDockerLoggingFilter";
     public static final String DOCKER_TLS_VERIFY = "CamelDockerTLSVerify";
@@ -230,7 +230,7 @@ public final class DockerConstants {
         DOCKER_DEFAULT_PARAMETERS.put(DOCKER_HOST, String.class);
         DOCKER_DEFAULT_PARAMETERS.put(DOCKER_PASSWORD, String.class);
         DOCKER_DEFAULT_PARAMETERS.put(DOCKER_PORT, Integer.class);
-        DOCKER_DEFAULT_PARAMETERS.put(DOCKER_SECURE, Boolean.class);
+        DOCKER_DEFAULT_PARAMETERS.put(DOCKER_SOCKET, Boolean.class);
         DOCKER_DEFAULT_PARAMETERS.put(DOCKER_SERVER_ADDRESS, String.class);
         DOCKER_DEFAULT_PARAMETERS.put(DOCKER_USERNAME, String.class);
     }

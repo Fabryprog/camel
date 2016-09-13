@@ -172,18 +172,6 @@ public class DockerComponent extends DefaultComponent {
         configuration.setRequestTimeout(requestTimeout);
     }
 
-    public boolean isSecure() {
-        return configuration.isSecure();
-    }
-
-    /**
-     * Use HTTPS communication
-     * @param secure
-     */
-    public void setSecure(boolean secure) {
-        configuration.setSecure(secure);
-    }
-
     public String getCertPath() {
         return configuration.getCertPath();
     }

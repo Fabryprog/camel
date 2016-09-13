@@ -41,8 +41,6 @@ public class DockerClientProfile {
 
     private Integer requestTimeout;
 
-    private Boolean secure;
-
     private String certPath;
 
     private Integer maxTotalConnections;
@@ -54,6 +52,8 @@ public class DockerClientProfile {
     private Boolean followRedirectFilterEnabled;
 
     private Boolean tlsVerify;
+    
+    private Boolean socket;
     
     public String getHost() {
         return host;
@@ -111,14 +111,6 @@ public class DockerClientProfile {
         this.requestTimeout = requestTimeout;
     }
 
-    public Boolean isSecure() {
-        return secure;
-    }
-
-    public void setSecure(Boolean secure) {
-        this.secure = secure;
-    }
-
     public String getCertPath() {
         return certPath;
     }
@@ -147,15 +139,9 @@ public class DockerClientProfile {
         ObjectHelper.notNull(this.host, "host");
         ObjectHelper.notNull(this.port, "port");
 
-        URL uri;
-        String secure = this.secure != null && this.secure ? "https" : "http";
-        try {
-            uri = new URL(secure, this.host, this.port, "");
-        } catch (MalformedURLException e) {
-            throw new DockerException(e);
-        }
+        String protocol = this.socket ? "unix" : "tcp";
 
-        return uri.toString();
+        return protocol + "://" + host + ":" + port;
 
     }
 
@@ -189,9 +175,10 @@ public class DockerClientProfile {
         result = prime * result + ((password == null) ? 0 : password.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((requestTimeout == null) ? 0 : requestTimeout.hashCode());
-        result = prime * result + ((secure == null) ? 0 : secure.hashCode());
         result = prime * result + ((serverAddress == null) ? 0 : serverAddress.hashCode());
         result = prime * result + ((username == null) ? 0 : username.hashCode());
+        result = prime * result + ((socket == null) ? 0 : socket.hashCode());
+        result = prime * result + ((tlsVerify == null) ? 0 : tlsVerify.hashCode());
         return result;
     }
 
@@ -277,13 +264,6 @@ public class DockerClientProfile {
         } else if (!requestTimeout.equals(other.requestTimeout)) {
             return false;
         }
-        if (secure == null) {
-            if (other.secure != null) {
-                return false;
-            }
-        } else if (!secure.equals(other.secure)) {
-            return false;
-        }
         if (serverAddress == null) {
             if (other.serverAddress != null) {
                 return false;
@@ -307,6 +287,25 @@ public class DockerClientProfile {
 
 	public void setTlsVerify(Boolean tlsVerify) {
 		this.tlsVerify = tlsVerify;
+	}
+
+	@Override
+	public String toString() {
+		return "DockerClientProfile [host=" + host + ", port=" + port + ", username=" + username + ", password="
+				+ password + ", email=" + email + ", serverAddress=" + serverAddress + ", requestTimeout="
+				+ requestTimeout + ", certPath=" + certPath + ", maxTotalConnections="
+				+ maxTotalConnections + ", maxPerRouteConnections=" + maxPerRouteConnections + ", loggingFilterEnabled="
+				+ loggingFilterEnabled + ", followRedirectFilterEnabled=" + followRedirectFilterEnabled + ", tlsVerify="
+						+ tlsVerify  + ", socket=" + socket + "]";
+	}
+
+	public Boolean isSocket() {
+		return socket;
+	}
+
+	public void setSocket(Boolean socket) {
+		this.socket = socket;
 	}    
 
+	
 }

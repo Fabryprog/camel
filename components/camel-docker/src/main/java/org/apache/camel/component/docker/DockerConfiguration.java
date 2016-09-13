@@ -48,8 +48,6 @@ public class DockerConfiguration implements Cloneable {
     @UriParam
     private Integer requestTimeout;
     @UriParam
-    private boolean secure;
-    @UriParam
     private String certPath;
     @UriParam(defaultValue = "100")
     private Integer maxTotalConnections = 100;
@@ -61,6 +59,8 @@ public class DockerConfiguration implements Cloneable {
     private boolean followRedirectFilter;
     @UriParam
     private boolean tlsVerify;
+    @UriParam(defaultValue="true")
+    private boolean socket;
     
     private Map<String, Object> parameters = new HashMap<String, Object>();
 
@@ -139,17 +139,6 @@ public class DockerConfiguration implements Cloneable {
      */
     public void setRequestTimeout(Integer requestTimeout) {
         this.requestTimeout = requestTimeout;
-    }
-
-    public boolean isSecure() {
-        return secure;
-    }
-
-    /**
-     * Use HTTPS communication
-     */
-    public void setSecure(boolean secure) {
-        this.secure = secure;
     }
 
     public String getCertPath() {
@@ -242,6 +231,19 @@ public class DockerConfiguration implements Cloneable {
 		this.tlsVerify = tlsVerify;
 	}
 
+	/***
+	 * connection mode, is socket is disabled the client will use tcp mode
+	 * 
+	 * @return
+	 */
+	public boolean isSocket() {
+		return socket;
+	}
+
+	public void setSocket(boolean socket) {
+		this.socket = socket;
+	}
+	
 	public DockerConfiguration copy() {
 		try {
 			return (DockerConfiguration) clone();

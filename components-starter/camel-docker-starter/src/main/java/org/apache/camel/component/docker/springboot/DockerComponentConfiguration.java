@@ -63,10 +63,6 @@ public class DockerComponentConfiguration {
      */
     private Integer requestTimeout;
     /**
-     * Use HTTPS communication
-     */
-    private Boolean secure;
-    /**
      * Location containing the SSL certificate chain
      */
     private String certPath;
@@ -157,14 +153,6 @@ public class DockerComponentConfiguration {
 
     public void setRequestTimeout(Integer requestTimeout) {
         this.requestTimeout = requestTimeout;
-    }
-
-    public Boolean getSecure() {
-        return secure;
-    }
-
-    public void setSecure(Boolean secure) {
-        this.secure = secure;
     }
 
     public String getCertPath() {
