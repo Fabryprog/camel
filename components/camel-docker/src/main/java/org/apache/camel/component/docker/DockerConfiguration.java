@@ -229,14 +229,11 @@ public class DockerConfiguration implements Cloneable {
         this.operation = operation;
     }
 
-    public DockerConfiguration copy() {
-        try {
-            return (DockerConfiguration) clone();
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeCamelException(e);
-        }
-    }
-
+    /**
+     * doker with trusted CA certificate
+     * 
+     * @return
+     */
 	public boolean isTlsVerify() {
 		return tlsVerify;
 	}
@@ -245,4 +242,11 @@ public class DockerConfiguration implements Cloneable {
 		this.tlsVerify = tlsVerify;
 	}
 
+	public DockerConfiguration copy() {
+		try {
+			return (DockerConfiguration) clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeCamelException(e);
+		}
+	}
 }
