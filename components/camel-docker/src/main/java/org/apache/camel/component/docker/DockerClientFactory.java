@@ -18,7 +18,6 @@ package org.apache.camel.component.docker;
 
 import org.apache.camel.Message;
 import org.apache.camel.component.docker.exception.DockerException;
-import org.apache.camel.component.docker.ssl.NoImplSslConfig;
 import org.apache.camel.util.ObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +26,6 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.DockerCmdExecFactory;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.LocalDirectorySSLConfig;
-import com.github.dockerjava.core.SSLConfig;
 import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 
 /**
@@ -104,14 +101,15 @@ public final class DockerClientFactory {
         		  .withRegistryUrl(clientProfile.getServerAddress())
         		  .build();
 
-		// using jaxrs/jersey implementation here (netty impl is also available)
+        LOGGER.info("Docker clientProfile {}", clientProfile);
+
+        // using jaxrs/jersey implementation here (netty impl is also available)
 		DockerCmdExecFactory dockerCmdExecFactory = new JerseyDockerCmdExecFactory()
 		  .withReadTimeout(clientProfile.getRequestTimeout())
 		  .withConnectTimeout(clientProfile.getRequestTimeout())
 		  .withMaxTotalConnections(clientProfile.getMaxTotalConnections())
 		  .withMaxPerRouteConnections(clientProfile.getMaxPerRouteConnections());
 
-		LOGGER.info("Docker clientProfile {}", clientProfile);
 		
 		client = DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(dockerCmdExecFactory).build();
 		

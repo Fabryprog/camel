@@ -57,7 +57,7 @@ public class DockerConfiguration implements Cloneable {
     private boolean loggingFilter;
     @UriParam
     private boolean followRedirectFilter;
-    @UriParam
+    @UriParam(defaultValue="false")
     private boolean tlsVerify;
     @UriParam(defaultValue="true")
     private boolean socket;

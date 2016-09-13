@@ -46,7 +46,7 @@ public class TopContainerCmdHeaderTest extends BaseDockerHeaderTest<TopContainer
         Map<String, Object> headers = getDefaultParameters();
         headers.put(DockerConstants.DOCKER_CONTAINER_ID, containerId);
         headers.put(DockerConstants.DOCKER_PS_ARGS, psArgs);
-
+        headers.put(DockerConstants.DOCKER_TLS_VERIFY, false);
 
         template.sendBodyAndHeaders("direct:in", "", headers);
 

@@ -56,7 +56,9 @@ public class AuthCmdHeaderTest extends BaseDockerHeaderTest<AuthCmd> {
         headers.put(DockerConstants.DOCKER_PASSWORD, password);
         headers.put(DockerConstants.DOCKER_EMAIL, email);
         headers.put(DockerConstants.DOCKER_SERVER_ADDRESS, serverAddress);
-
+        headers.put(DockerConstants.DOCKER_TLS_VERIFY, false);
+        headers.put(DockerConstants.DOCKER_SOCKET, true);
+        
         template.sendBodyAndHeaders("direct:in", "", headers);
 
         Mockito.verify(dockerClient, Mockito.times(1)).authCmd();
