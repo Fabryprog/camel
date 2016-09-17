@@ -46,15 +46,15 @@ public class DockerClientProfile {
     private Integer maxTotalConnections;
 
     private Integer maxPerRouteConnections;
-    
+
     private Boolean loggingFilterEnabled;
-    
+
     private Boolean followRedirectFilterEnabled;
 
     private Boolean tlsVerify;
-    
+
     private Boolean socket;
-    
+
     public String getHost() {
         return host;
     }
@@ -193,7 +193,7 @@ public class DockerClientProfile {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        DockerClientProfile other = (DockerClientProfile) obj;
+        DockerClientProfile other = (DockerClientProfile)obj;
         if (certPath == null) {
             if (other.certPath != null) {
                 return false;
@@ -281,31 +281,28 @@ public class DockerClientProfile {
         return true;
     }
 
-	public Boolean isTlsVerify() {
-		return tlsVerify;
-	}
+    public Boolean isTlsVerify() {
+        return tlsVerify;
+    }
 
-	public void setTlsVerify(Boolean tlsVerify) {
-		this.tlsVerify = tlsVerify;
-	}
+    public void setTlsVerify(Boolean tlsVerify) {
+        this.tlsVerify = tlsVerify;
+    }
 
-	@Override
-	public String toString() {
-		return "DockerClientProfile [host=" + host + ", port=" + port + ", username=" + username + ", password="
-				+ password + ", email=" + email + ", serverAddress=" + serverAddress + ", requestTimeout="
-				+ requestTimeout + ", certPath=" + certPath + ", maxTotalConnections="
-				+ maxTotalConnections + ", maxPerRouteConnections=" + maxPerRouteConnections + ", loggingFilterEnabled="
-				+ loggingFilterEnabled + ", followRedirectFilterEnabled=" + followRedirectFilterEnabled + ", tlsVerify="
-						+ tlsVerify  + ", socket=" + socket + "]";
-	}
+    @Override
+    public String toString() {
+        return "DockerClientProfile [host=" + host + ", port=" + port + ", username=" + username + ", password=" + password + ", email=" + email + ", serverAddress="
+               + serverAddress + ", requestTimeout=" + requestTimeout + ", certPath=" + certPath + ", maxTotalConnections=" + maxTotalConnections + ", maxPerRouteConnections="
+               + maxPerRouteConnections + ", loggingFilterEnabled=" + loggingFilterEnabled + ", followRedirectFilterEnabled=" + followRedirectFilterEnabled + ", tlsVerify="
+               + tlsVerify + ", socket=" + socket + "]";
+    }
 
-	public Boolean isSocket() {
-		return socket;
-	}
+    public Boolean isSocket() {
+        return socket;
+    }
 
-	public void setSocket(Boolean socket) {
-		this.socket = socket;
-	}    
+    public void setSocket(Boolean socket) {
+        this.socket = socket;
+    }
 
-	
 }

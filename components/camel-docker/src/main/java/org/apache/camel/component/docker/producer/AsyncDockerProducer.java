@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.camel.component.docker.producer;
 
 import java.io.File;
@@ -68,108 +67,108 @@ public class AsyncDockerProducer extends DefaultAsyncProducer {
     public AsyncDockerProducer(DockerEndpoint endpoint) {
         super(endpoint);
         this.configuration = endpoint.getConfiguration();
-        this.component = (DockerComponent) endpoint.getComponent();
+        this.component = (DockerComponent)endpoint.getComponent();
     }
-    
+
     @Override
     public boolean process(Exchange exchange, AsyncCallback callback) {
         try {
-        
+
             Message message = exchange.getIn();
             DockerClient client = DockerClientFactory.getDockerClient(component, configuration, message);
 
             DockerOperation operation = configuration.getOperation();
-            
+
             Object result = null;
-                            
+
             switch (operation) {
-    
+
             /** Images **/
             case BUILD_IMAGE:
-                    //result contain an image id value
-                    result = executeBuildImageRequest(client, message).exec(new BuildImageResultCallback() {
-                        @Override
-                        public void onNext(BuildResponseItem item) {
-                            log.trace("build image callback {}", item);
-                            super.onNext(item);
-                        }
-                    }).awaitImageId();
+                // result contain an image id value
+                result = executeBuildImageRequest(client, message).exec(new BuildImageResultCallback() {
+                    @Override
+                    public void onNext(BuildResponseItem item) {
+                        log.trace("build image callback {}", item);
+                        super.onNext(item);
+                    }
+                }).awaitImageId();
                 break;
             case PULL_IMAGE:
-                    result = executePullImageRequest(client, message).exec(new PullImageResultCallback() {
-                            @Override
-                            public void onNext(PullResponseItem item) {
-                            log.trace("pull image callback {}", item);
-                                    super.onNext(item);
-                            }
-                    });
+                result = executePullImageRequest(client, message).exec(new PullImageResultCallback() {
+                    @Override
+                    public void onNext(PullResponseItem item) {
+                        log.trace("pull image callback {}", item);
+                        super.onNext(item);
+                    }
+                });
                 break;
             case PUSH_IMAGE:
-                    result = executePushImageRequest(client, message).exec(new PushImageResultCallback() {
-                            @Override
-                            public void onNext(PushResponseItem item) {
-                            log.trace("push image callback {}", item);
-                                    super.onNext(item);
-                            }
-                    }).awaitCompletion();
+                result = executePushImageRequest(client, message).exec(new PushImageResultCallback() {
+                    @Override
+                    public void onNext(PushResponseItem item) {
+                        log.trace("push image callback {}", item);
+                        super.onNext(item);
+                    }
+                }).awaitCompletion();
                 break;
             /** Containers **/
             case ATTACH_CONTAINER:
-                    result = executeAttachContainerRequest(client, message).exec(new AttachContainerResultCallback() {
-                            @Override
-                            public void onNext(Frame item) {
-                            log.trace("attach container callback {}", item);
-                                    super.onNext(item);
-                            }
-                    
-                    }).awaitCompletion();
-                    
+                result = executeAttachContainerRequest(client, message).exec(new AttachContainerResultCallback() {
+                    @Override
+                    public void onNext(Frame item) {
+                        log.trace("attach container callback {}", item);
+                        super.onNext(item);
+                    }
+
+                }).awaitCompletion();
+
                 break;
             case LOG_CONTAINER:
-                    result = executeLogContainerRequest(client, message).exec(new LogContainerResultCallback() {
-                            @Override
-                            public void onNext(Frame item) {
-                            log.trace("log container callback {}", item);
-                                    super.onNext(item);
-                            }
-                    
-                    }).awaitCompletion();
-                    
+                result = executeLogContainerRequest(client, message).exec(new LogContainerResultCallback() {
+                    @Override
+                    public void onNext(Frame item) {
+                        log.trace("log container callback {}", item);
+                        super.onNext(item);
+                    }
+
+                }).awaitCompletion();
+
                 break;
             case WAIT_CONTAINER:
-                    //result contain a status code value
-                    result = executeWaitContainerRequest(client, message).exec(new WaitContainerResultCallback() {
-                            @Override
-                            public void onNext(WaitResponse item) {
-                            log.trace("wait contanier callback {}", item);
-                                    super.onNext(item);
-                            }
-                    
-                    }).awaitStatusCode();
+                // result contain a status code value
+                result = executeWaitContainerRequest(client, message).exec(new WaitContainerResultCallback() {
+                    @Override
+                    public void onNext(WaitResponse item) {
+                        log.trace("wait contanier callback {}", item);
+                        super.onNext(item);
+                    }
+
+                }).awaitStatusCode();
                 break;
             case EXEC_START:
-                    result = executeExecStartRequest(client, message).exec(new ExecStartResultCallback() {
-                            @Override
-                            public void onNext(Frame item) {
-                            log.trace("exec start callback {}", item);
-                                    super.onNext(item);
-                            }
-                    
-                    }).awaitCompletion();
+                result = executeExecStartRequest(client, message).exec(new ExecStartResultCallback() {
+                    @Override
+                    public void onNext(Frame item) {
+                        log.trace("exec start callback {}", item);
+                        super.onNext(item);
+                    }
+
+                }).awaitCompletion();
                 break;
             default:
                 throw new DockerException("Invalid operation: " + operation);
             }
-    
+
             // If request included a response, set as body
             if (result != null) {
                 exchange.getIn().setBody(result);
-                
+
                 return true;
             }
         } catch (DockerException | InterruptedException e) {
             log.error(e.getMessage(), e);
-            
+
             return false;
         }
 
@@ -193,9 +192,9 @@ public class AsyncDockerProducer extends DefaultAsyncProducer {
         BuildImageCmd buildImageCmd;
 
         if (body != null && body instanceof InputStream) {
-            buildImageCmd = client.buildImageCmd((InputStream) body);
+            buildImageCmd = client.buildImageCmd((InputStream)body);
         } else if (body != null && body instanceof File) {
-            buildImageCmd = client.buildImageCmd((File) body);
+            buildImageCmd = client.buildImageCmd((File)body);
         } else {
             throw new DockerException("Unable to location source Image");
         }
@@ -339,7 +338,6 @@ public class AsyncDockerProducer extends DefaultAsyncProducer {
             attachContainerCmd.withStdOut(stdOut);
         }
 
-
         Boolean timestamps = DockerHelper.getProperty(DockerConstants.DOCKER_TIMESTAMPS, configuration, message, Boolean.class);
 
         if (timestamps != null) {
@@ -427,7 +425,6 @@ public class AsyncDockerProducer extends DefaultAsyncProducer {
         return waitContainerCmd;
 
     }
-
 
     /**
      * Produces a exec start request

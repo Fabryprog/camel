@@ -16,8 +16,16 @@
  */
 package org.apache.camel.component.docker.headers;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.ws.rs.client.Client;
 
 import com.github.dockerjava.api.DockerClient;
 import org.apache.camel.CamelContext;
@@ -58,7 +66,7 @@ public abstract class BaseDockerHeaderTest<T> extends CamelTestSupport {
     }
 
     @Before
-    public void setupTest() {
+    public void setupTest() throws Exception {
         setupMocks();
     }
 
@@ -150,6 +158,5 @@ public abstract class BaseDockerHeaderTest<T> extends CamelTestSupport {
     protected abstract void setupMocks();
 
     protected abstract DockerOperation getOperation();
-
 
 }

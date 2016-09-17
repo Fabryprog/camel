@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Copy File from Container Request headers are applied properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class CopyFileContainerCmdHeaderTest extends BaseDockerHeaderTest<CopyFileFromContainerCmd> {
 
     @Mock

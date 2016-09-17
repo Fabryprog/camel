@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Exec Start Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class ExecStartCmdHeaderTest extends BaseDockerHeaderTest<ExecStartCmd> {
 
     @Mock

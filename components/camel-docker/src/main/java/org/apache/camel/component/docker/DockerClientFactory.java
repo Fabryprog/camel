@@ -16,17 +16,16 @@
  */
 package org.apache.camel.component.docker;
 
-import org.apache.camel.Message;
-import org.apache.camel.component.docker.exception.DockerException;
-import org.apache.camel.util.ObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.DockerCmdExecFactory;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
+import org.apache.camel.Message;
+import org.apache.camel.component.docker.exception.DockerException;
+import org.apache.camel.util.ObjectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Methods for communicating with Docker
@@ -63,13 +62,13 @@ public final class DockerClientFactory {
         String serverAddress = DockerHelper.getProperty(DockerConstants.DOCKER_SERVER_ADDRESS, dockerConfiguration, message, String.class, dockerConfiguration.getServerAddress());
         String certPath = DockerHelper.getProperty(DockerConstants.DOCKER_CERT_PATH, dockerConfiguration, message, String.class, dockerConfiguration.getCertPath());
         Boolean socket = DockerHelper.getProperty(DockerConstants.DOCKER_SOCKET, dockerConfiguration, message, Boolean.class, dockerConfiguration.isSocket());
-        Boolean loggingFilter = DockerHelper.getProperty(DockerConstants.DOCKER_LOGGING_FILTER, dockerConfiguration, message, Boolean.class, dockerConfiguration.isLoggingFilterEnabled());
-        Boolean followRedirectFilter = DockerHelper.getProperty(DockerConstants.DOCKER_FOLLOW_REDIRECT_FILTER, dockerConfiguration, message, 
-                Boolean.class, dockerConfiguration.isFollowRedirectFilterEnabled());
+        Boolean loggingFilter = DockerHelper.getProperty(DockerConstants.DOCKER_LOGGING_FILTER, dockerConfiguration, message, Boolean.class,
+                                                         dockerConfiguration.isLoggingFilterEnabled());
+        Boolean followRedirectFilter = DockerHelper.getProperty(DockerConstants.DOCKER_FOLLOW_REDIRECT_FILTER, dockerConfiguration, message, Boolean.class,
+                                                                dockerConfiguration.isFollowRedirectFilterEnabled());
 
-        Boolean tlsVerify = DockerHelper.getProperty(DockerConstants.DOCKER_TLS_VERIFY, dockerConfiguration, message, 
-                Boolean.class, dockerConfiguration.isTlsVerify());
-        
+        Boolean tlsVerify = DockerHelper.getProperty(DockerConstants.DOCKER_TLS_VERIFY, dockerConfiguration, message, Boolean.class, dockerConfiguration.isTlsVerify());
+
         clientProfile.setHost(host);
         clientProfile.setPort(port);
         clientProfile.setEmail(email);
@@ -84,38 +83,29 @@ public final class DockerClientFactory {
         clientProfile.setFollowRedirectFilter(followRedirectFilter);
         clientProfile.setLoggingFilter(loggingFilter);
         clientProfile.setTlsVerify(tlsVerify);
-        
+
         DockerClient client = dockerComponent.getClient(clientProfile);
 
         if (client != null) {
             return client;
         }
 
-        DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-        		  .withDockerHost(clientProfile.toUrl())
-        		  .withDockerTlsVerify(clientProfile.isTlsVerify())
-        		  .withDockerCertPath(clientProfile.getCertPath())
-        		  .withRegistryUsername(clientProfile.getUsername())
-        		  .withRegistryPassword(clientProfile.getPassword())
-        		  .withRegistryEmail(clientProfile.getEmail())
-        		  .withRegistryUrl(clientProfile.getServerAddress())
-        		  .build();
+        DefaultDockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder().withDockerHost(clientProfile.toUrl())
+            .withDockerTlsVerify(clientProfile.isTlsVerify()).withDockerCertPath(clientProfile.getCertPath()).withRegistryUsername(clientProfile.getUsername())
+            .withRegistryPassword(clientProfile.getPassword()).withRegistryEmail(clientProfile.getEmail()).withRegistryUrl(clientProfile.getServerAddress()).build();
 
         LOGGER.info("Docker clientProfile {}", clientProfile);
 
         // using jaxrs/jersey implementation here (netty impl is also available)
-		DockerCmdExecFactory dockerCmdExecFactory = new JerseyDockerCmdExecFactory()
-		  .withReadTimeout(clientProfile.getRequestTimeout())
-		  .withConnectTimeout(clientProfile.getRequestTimeout())
-		  .withMaxTotalConnections(clientProfile.getMaxTotalConnections())
-		  .withMaxPerRouteConnections(clientProfile.getMaxPerRouteConnections());
+        DockerCmdExecFactory dockerCmdExecFactory = new JerseyDockerCmdExecFactory().withReadTimeout(clientProfile.getRequestTimeout())
+            .withConnectTimeout(clientProfile.getRequestTimeout()).withMaxTotalConnections(clientProfile.getMaxTotalConnections())
+            .withMaxPerRouteConnections(clientProfile.getMaxPerRouteConnections());
 
-		
-		client = DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(dockerCmdExecFactory).build();
-		
-		dockerComponent.setClient(clientProfile, client);
-        
-		return client;
+        client = DockerClientBuilder.getInstance(config).withDockerCmdExecFactory(dockerCmdExecFactory).build();
+
+        dockerComponent.setClient(clientProfile, client);
+
+        return client;
     }
 
 }

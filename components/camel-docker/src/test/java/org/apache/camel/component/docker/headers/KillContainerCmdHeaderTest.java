@@ -18,6 +18,7 @@ package org.apache.camel.component.docker.headers;
 
 import java.util.Map;
 
+import com.github.dockerjava.api.command.KillContainerCmd;
 import org.apache.camel.component.docker.DockerConstants;
 import org.apache.camel.component.docker.DockerOperation;
 import org.junit.Test;
@@ -26,12 +27,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
-import com.github.dockerjava.api.command.KillContainerCmd;
-
 /**
  * Validates Kill Container Request headers are applied properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class KillContainerCmdHeaderTest extends BaseDockerHeaderTest<KillContainerCmd> {
 
     @Mock

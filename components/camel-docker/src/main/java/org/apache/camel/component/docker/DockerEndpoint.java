@@ -51,7 +51,7 @@ public class DockerEndpoint extends DefaultEndpoint {
         DockerOperation operation = configuration.getOperation();
 
         if (operation != null && operation.canProduce()) {
-            if(operation.isAsync()) {
+            if (operation.isAsync()) {
                 return new AsyncDockerProducer(this);
             } else {
                 return new DockerProducer(this);

@@ -33,7 +33,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Authentication Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class AuthCmdHeaderTest extends BaseDockerHeaderTest<AuthCmd> {
 
     @Mock
@@ -60,7 +60,7 @@ public class AuthCmdHeaderTest extends BaseDockerHeaderTest<AuthCmd> {
         headers.put(DockerConstants.DOCKER_SOCKET, true);
         
         template.sendBodyAndHeaders("direct:in", "", headers);
-
+        
         Mockito.verify(dockerClient, Mockito.times(1)).authCmd();
         Mockito.verify(mockObject, Mockito.times(1)).withAuthConfig((AuthConfig) Matchers.anyObject());
 

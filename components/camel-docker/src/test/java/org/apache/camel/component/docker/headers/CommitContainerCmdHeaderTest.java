@@ -35,7 +35,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Commit Container Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class CommitContainerCmdHeaderTest extends BaseDockerHeaderTest<CommitCmd> {
 
 

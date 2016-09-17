@@ -29,7 +29,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Info Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class InfoCmdHeaderTest extends BaseDockerHeaderTest<InfoCmd> {
 
     @Mock

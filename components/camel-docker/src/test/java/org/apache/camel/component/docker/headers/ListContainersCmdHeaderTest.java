@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates List Containers Request headers are applied properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class ListContainersCmdHeaderTest extends BaseDockerHeaderTest<ListContainersCmd> {
 
     @Mock

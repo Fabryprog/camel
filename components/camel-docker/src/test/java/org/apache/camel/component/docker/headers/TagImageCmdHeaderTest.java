@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Tag Image Request headers are applied properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class TagImageCmdHeaderTest extends BaseDockerHeaderTest<TagImageCmd> {
 
     @Mock

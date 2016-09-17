@@ -29,7 +29,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Ping Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class PingCmdHeaderTest extends BaseDockerHeaderTest<PingCmd> {
 
     @Mock

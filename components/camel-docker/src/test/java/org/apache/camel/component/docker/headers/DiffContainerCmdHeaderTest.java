@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Container Diff Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class DiffContainerCmdHeaderTest extends BaseDockerHeaderTest<ContainerDiffCmd> {
 
     @Mock

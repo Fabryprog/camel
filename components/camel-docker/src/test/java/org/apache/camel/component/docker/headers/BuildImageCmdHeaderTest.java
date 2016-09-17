@@ -34,7 +34,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Build Image Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class BuildImageCmdHeaderTest extends BaseDockerHeaderTest<BuildImageCmd> {
 
     @Mock

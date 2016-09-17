@@ -31,7 +31,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Inspect Image Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class InspectImageCmdHeaderTest extends BaseDockerHeaderTest<InspectImageCmd> {
 
     @Mock

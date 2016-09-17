@@ -36,7 +36,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Create Container Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class CreateContainerCmdHeaderTest extends BaseDockerHeaderTest<CreateContainerCmd> {
 
 

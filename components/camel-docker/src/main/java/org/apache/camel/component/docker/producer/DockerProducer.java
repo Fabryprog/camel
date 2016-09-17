@@ -18,21 +18,6 @@ package org.apache.camel.component.docker.producer;
 
 import java.io.InputStream;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.component.docker.DockerClientFactory;
-import org.apache.camel.component.docker.DockerComponent;
-import org.apache.camel.component.docker.DockerConfiguration;
-import org.apache.camel.component.docker.DockerConstants;
-import org.apache.camel.component.docker.DockerEndpoint;
-import org.apache.camel.component.docker.DockerHelper;
-import org.apache.camel.component.docker.DockerOperation;
-import org.apache.camel.component.docker.exception.DockerException;
-import org.apache.camel.impl.DefaultProducer;
-import org.apache.camel.util.ObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.AuthCmd;
 import com.github.dockerjava.api.command.CommitCmd;
@@ -67,6 +52,20 @@ import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Volume;
 import com.github.dockerjava.api.model.Volumes;
 import com.github.dockerjava.api.model.VolumesFrom;
+import org.apache.camel.Exchange;
+import org.apache.camel.Message;
+import org.apache.camel.component.docker.DockerClientFactory;
+import org.apache.camel.component.docker.DockerComponent;
+import org.apache.camel.component.docker.DockerConfiguration;
+import org.apache.camel.component.docker.DockerConstants;
+import org.apache.camel.component.docker.DockerEndpoint;
+import org.apache.camel.component.docker.DockerHelper;
+import org.apache.camel.component.docker.DockerOperation;
+import org.apache.camel.component.docker.exception.DockerException;
+import org.apache.camel.impl.DefaultProducer;
+import org.apache.camel.util.ObjectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Docker producer.
@@ -79,7 +78,7 @@ public class DockerProducer extends DefaultProducer {
     public DockerProducer(DockerEndpoint endpoint) {
         super(endpoint);
         this.configuration = endpoint.getConfiguration();
-        this.component = (DockerComponent) endpoint.getComponent();
+        this.component = (DockerComponent)endpoint.getComponent();
     }
 
     public void process(Exchange exchange) throws Exception {
@@ -88,14 +87,14 @@ public class DockerProducer extends DefaultProducer {
         DockerClient client = DockerClientFactory.getDockerClient(component, configuration, message);
 
         DockerOperation operation = configuration.getOperation();
-        
+
         Object result = null;
-        		
+
         switch (operation) {
 
         /** General **/
         case AUTH:
-        	result = executeAuthRequest(client, message).exec();
+            result = executeAuthRequest(client, message).exec();
             break;
         case INFO:
             result = executeInfoRequest(client, message).exec();
@@ -177,7 +176,6 @@ public class DockerProducer extends DefaultProducer {
         if (result != null) {
             exchange.getIn().setBody(result);
         }
-
 
     }
 
@@ -308,7 +306,6 @@ public class DockerProducer extends DefaultProducer {
 
     }
 
-
     /**
      * Performs a list images request
      *
@@ -337,8 +334,6 @@ public class DockerProducer extends DefaultProducer {
         return listImagesCmd;
 
     }
-
-
 
     /**
      * Produces a remove image request
@@ -373,7 +368,6 @@ public class DockerProducer extends DefaultProducer {
 
     }
 
-
     /**
      * Produces a search image request
      *
@@ -394,7 +388,6 @@ public class DockerProducer extends DefaultProducer {
         return searchImagesCmd;
 
     }
-
 
     /**
      * Produces a tag image request
@@ -428,7 +421,6 @@ public class DockerProducer extends DefaultProducer {
         return tagImageCmd;
 
     }
-
 
     /*********************
      * Container Requests
@@ -688,7 +680,7 @@ public class DockerProducer extends DefaultProducer {
         if (dns != null) {
             createContainerCmd.withDns(dns);
         }
-        
+
         String domainName = DockerHelper.getProperty(DockerConstants.DOCKER_DOMAIN_NAME, configuration, message, String.class);
 
         if (domainName != null) {
@@ -907,7 +899,6 @@ public class DockerProducer extends DefaultProducer {
             listContainersCmd.withShowSize(showSize);
         }
 
-
         String since = DockerHelper.getProperty(DockerConstants.DOCKER_SINCE, configuration, message, String.class);
 
         if (since != null) {
@@ -1095,7 +1086,6 @@ public class DockerProducer extends DefaultProducer {
     /*********************
      * Exec Requests
      ********************/
-
 
     /**
      * Produces a exec create request

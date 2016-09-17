@@ -29,13 +29,16 @@ import org.apache.camel.spi.UriPath;
 public class DockerConfiguration implements Cloneable {
 
     @UriPath(enums = "events,stats,auth,info,ping,version,imagebuild,imagecreate,imageinspect,imagelist,imagepull,imagepush"
-            + "imageremove,imagesearch,imagetag,containerattach,containercommit,containercopyfile,containercreate,containerdiff"
-            + "inspectcontainer,containerkill,containerlist,containerlog,containerpause,containerrestart,containerremove,containerstart"
-            + "containerstop,containertop,containerunpause,containerwait,execcreate,execstart") @Metadata(required = "true")
+                     + "imageremove,imagesearch,imagetag,containerattach,containercommit,containercopyfile,containercreate,containerdiff"
+                     + "inspectcontainer,containerkill,containerlist,containerlog,containerpause,containerrestart,containerremove,containerstart"
+                     + "containerstop,containertop,containerunpause,containerwait,execcreate,execstart")
+    @Metadata(required = "true")
     private DockerOperation operation;
-    @UriParam(defaultValue = "localhost") @Metadata(required = "true")
+    @UriParam(defaultValue = "localhost")
+    @Metadata(required = "true")
     private String host = "localhost";
-    @UriParam(defaultValue = "2375") @Metadata(required = "true")
+    @UriParam(defaultValue = "2375")
+    @Metadata(required = "true")
     private Integer port = 2375;
     @UriParam
     private String username;
@@ -57,11 +60,11 @@ public class DockerConfiguration implements Cloneable {
     private boolean loggingFilter;
     @UriParam
     private boolean followRedirectFilter;
-    @UriParam(defaultValue="false")
+    @UriParam(defaultValue = "false")
     private boolean tlsVerify;
-    @UriParam(defaultValue="true")
+    @UriParam(defaultValue = "true")
     private boolean socket;
-    
+
     private Map<String, Object> parameters = new HashMap<String, Object>();
 
     public String getHost() {
@@ -223,32 +226,32 @@ public class DockerConfiguration implements Cloneable {
      * 
      * @return
      */
-	public boolean isTlsVerify() {
-		return tlsVerify;
-	}
+    public boolean isTlsVerify() {
+        return tlsVerify;
+    }
 
-	public void setTlsVerify(boolean tlsVerify) {
-		this.tlsVerify = tlsVerify;
-	}
+    public void setTlsVerify(boolean tlsVerify) {
+        this.tlsVerify = tlsVerify;
+    }
 
-	/***
-	 * connection mode, is socket is disabled the client will use tcp mode
-	 * 
-	 * @return
-	 */
-	public boolean isSocket() {
-		return socket;
-	}
+    /***
+     * connection mode, is socket is disabled the client will use tcp mode
+     * 
+     * @return
+     */
+    public boolean isSocket() {
+        return socket;
+    }
 
-	public void setSocket(boolean socket) {
-		this.socket = socket;
-	}
-	
-	public DockerConfiguration copy() {
-		try {
-			return (DockerConfiguration) clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeCamelException(e);
-		}
-	}
+    public void setSocket(boolean socket) {
+        this.socket = socket;
+    }
+
+    public DockerConfiguration copy() {
+        try {
+            return (DockerConfiguration)clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeCamelException(e);
+        }
+    }
 }

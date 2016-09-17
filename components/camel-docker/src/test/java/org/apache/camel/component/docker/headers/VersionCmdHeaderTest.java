@@ -29,7 +29,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Version Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class VersionCmdHeaderTest extends BaseDockerHeaderTest<VersionCmd> {
 
     @Mock

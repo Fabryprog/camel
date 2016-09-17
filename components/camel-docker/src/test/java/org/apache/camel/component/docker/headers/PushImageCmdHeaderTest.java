@@ -32,7 +32,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Push Image Request headers are applied properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class PushImageCmdHeaderTest extends BaseDockerHeaderTest<PushImageCmd> {
 
     @Mock

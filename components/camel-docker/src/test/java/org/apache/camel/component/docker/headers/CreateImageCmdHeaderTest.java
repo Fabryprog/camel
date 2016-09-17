@@ -32,7 +32,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 /**
  * Validates Create Image Request headers are parsed properly
  */
-@PowerMockIgnore("javax.management.*")
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*"})
 public class CreateImageCmdHeaderTest extends BaseDockerHeaderTest<CreateImageCmd> {
 
     @Mock
