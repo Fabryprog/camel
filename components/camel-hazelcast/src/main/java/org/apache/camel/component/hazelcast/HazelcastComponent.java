@@ -16,16 +16,16 @@
  */
 package org.apache.camel.component.hazelcast;
 
-import java.util.Map;
+import static org.apache.camel.component.hazelcast.HazelcastConstants.HAZELCAST_INSTANCE_NAME_PARAM;
+import static org.apache.camel.component.hazelcast.HazelcastConstants.HAZELCAST_INSTANCE_PARAM;
+import static org.apache.camel.util.ObjectHelper.removeStartingCharacters;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
+import java.util.Map;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.component.hazelcast.atomicnumber.HazelcastAtomicnumberEndpoint;
+import org.apache.camel.component.hazelcast.executor.HazelcastExecutorEndpoint;
 import org.apache.camel.component.hazelcast.instance.HazelcastInstanceEndpoint;
 import org.apache.camel.component.hazelcast.list.HazelcastListEndpoint;
 import org.apache.camel.component.hazelcast.map.HazelcastMapEndpoint;
@@ -39,9 +39,10 @@ import org.apache.camel.component.hazelcast.set.HazelcastSetEndpoint;
 import org.apache.camel.component.hazelcast.topic.HazelcastTopicEndpoint;
 import org.apache.camel.impl.UriEndpointComponent;
 
-import static org.apache.camel.component.hazelcast.HazelcastConstants.HAZELCAST_INSTANCE_NAME_PARAM;
-import static org.apache.camel.component.hazelcast.HazelcastConstants.HAZELCAST_INSTANCE_PARAM;
-import static org.apache.camel.util.ObjectHelper.removeStartingCharacters;
+import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 
 public class HazelcastComponent extends UriEndpointComponent {
 
@@ -156,6 +157,13 @@ public class HazelcastComponent extends UriEndpointComponent {
             remaining = removeStartingCharacters(remaining.substring(HazelcastConstants.RINGBUFFER_PREFIX.length()), '/');
             endpoint = new HazelcastRingbufferEndpoint(hzInstance, uri, this, remaining);
             endpoint.setCommand(HazelcastCommand.ringbuffer);
+        } 
+        
+        if (remaining.startsWith(HazelcastConstants.EXECUTOR_PREFIX)) {
+            // remaining is anything (name it foo ;)
+            remaining = removeStartingCharacters(remaining.substring(HazelcastConstants.RINGBUFFER_PREFIX.length()), '/');
+            endpoint = new HazelcastExecutorEndpoint(hzInstance, uri, this, remaining);
+            endpoint.setCommand(HazelcastCommand.executor);
         } 
         
         if (endpoint == null) {

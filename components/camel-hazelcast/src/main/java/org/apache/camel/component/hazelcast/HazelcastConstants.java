@@ -32,6 +32,7 @@ public final class HazelcastConstants {
     public static final String LIST_PREFIX = "list:";
     public static final String SET_PREFIX = "set:";
     public static final String RINGBUFFER_PREFIX = "ringbuffer:";
+    public static final String EXECUTOR_PREFIX = "executor:";
 
     /*
      * incoming header properties
@@ -132,6 +133,10 @@ public final class HazelcastConstants {
     public static final String HAZELCAST_INSTANCE_NAME_PARAM = "hazelcastInstanceName";
     public static final String HAZELCAST_INSTANCE_PARAM = "hazelcastInstance";
 
+    //executor header properties
+    public static final String EXECUTOR_CLASS = "CamelHazelcastExecutorClass";
+    public static final String EXECUTOR_PARAMS = "CamelHazelcastExecutorParams";
+    
 
     private HazelcastConstants() {
     }
