@@ -28,6 +28,7 @@ import org.apache.camel.spi.Metadata;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
 import org.apache.camel.spi.UriPath;
+import org.apache.camel.util.ObjectHelper;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClientPersistence;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -61,7 +62,13 @@ public class PahoEndpoint extends DefaultEndpoint {
     private PahoPersistence persistence = PahoPersistence.MEMORY;
     @UriParam(description = "Base directory used by file persistence.", defaultValue = "Current directory")
     private String filePersistenceDirectory;
-
+    @UriParam(defaultValue = "true")
+    private boolean autoReconnect = true; 
+    @UriParam @Metadata(secret = true)
+    private String userName; 
+    @UriParam @Metadata(secret = true)
+    private String password; 
+    
     // Collaboration members
     @UriParam
     private MqttConnectOptions connectOptions;
@@ -136,7 +143,15 @@ public class PahoEndpoint extends DefaultEndpoint {
             LOG.warn("Found {} instances of the MqttConnectOptions in the registry. None of these will be used by the endpoint. "
                      + "Please use 'connectOptions' endpoint option to select one.", connectOptions.size());
         }
-        return new MqttConnectOptions();
+        
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(autoReconnect);
+        
+        if (ObjectHelper.isNotEmpty(userName) && ObjectHelper.isNotEmpty(password)) {
+            options.setUserName(userName);
+            options.setPassword(password.toCharArray());
+        }
+        return options;
     }
 
     public Exchange createExchange(MqttMessage mqttMessage, String topic) {
@@ -255,4 +270,39 @@ public class PahoEndpoint extends DefaultEndpoint {
         this.connectOptions = connOpts;
     }
 
+    public synchronized boolean isAutoReconnect() {
+        return autoReconnect;
+    }
+    
+    /**
+     * Client will automatically attempt to reconnect to the server if the connection is lost 
+     * @param autoReconnect
+     */
+    public synchronized void setAutoReconnect(boolean autoReconnect) {
+        this.autoReconnect = autoReconnect;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * Username to be used for authentication against the MQTT broker
+     * @param userName
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Password to be used for authentication against the MQTT broker
+     * @param password
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
