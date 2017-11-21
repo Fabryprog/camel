@@ -49,45 +49,47 @@ public final class MongoDbBasicConverters {
     }
     
     @Converter
-    public static BasicDBObject fromMapToDBObject(Map<?, ?> map) {
+    public static BasicDBObject fromMapToDBObject(Map<?, ?> map) throws Exception {
         return new BasicDBObject(map);
     }
     
     @Converter
-    public static Map<String, Object> fromBasicDBObjectToMap(BasicDBObject basicDbObject) {
+    public static Map<String, Object> fromBasicDBObjectToMap(BasicDBObject basicDbObject) throws Exception {
         return basicDbObject;
     }
 
     @Converter
-    public static DBObject fromStringToDBObject(String s) {
+    public static DBObject fromStringToDBObject(String s) throws Exception {
         DBObject answer = null;
         try {
             answer = (DBObject) JSON.parse(s);
         } catch (Exception e) {
             LOG.warn("String -> DBObject conversion selected, but the following exception occurred. Returning null.", e);
+            throw e;
         }
 
         return answer;
     }
     @Converter
-    public static BasicDBObject fromStringToBasicDBObject(String s) {
+    public static BasicDBObject fromStringToBasicDBObject(String s) throws Exception {
         BasicDBObject answer = null;
         try {
             answer = (BasicDBObject) JSON.parse(s);
         } catch (Exception e) {
             LOG.warn("String -> DBObject conversion selected, but the following exception occurred. Returning null.", e);
+            throw e;
         }
         
         return answer;
     }
    
     @Converter
-    public static BasicDBObject fromFileToDBObject(File f, Exchange exchange) throws FileNotFoundException {
+    public static BasicDBObject fromFileToDBObject(File f, Exchange exchange) throws Exception {
         return fromInputStreamToDBObject(new FileInputStream(f), exchange);
     }
     
     @Converter
-    public static BasicDBObject fromInputStreamToDBObject(InputStream is, Exchange exchange) {
+    public static BasicDBObject fromInputStreamToDBObject(InputStream is, Exchange exchange) throws Exception {
         BasicDBObject answer = null;
         try {
             byte[] input = IOConverter.toBytes(is);
@@ -101,6 +103,7 @@ public final class MongoDbBasicConverters {
             }
         } catch (Exception e) {
             LOG.warn("String -> DBObject conversion selected, but the following exception occurred. Returning null.", e);
+            throw e;
         } finally {
             // we need to make sure to close the input stream
             IOHelper.close(is, "InputStream", LOG);
@@ -125,7 +128,7 @@ public final class MongoDbBasicConverters {
     }
 
     @Converter
-    public static DBObject fromAnyObjectToDBObject(Object value) {
+    public static DBObject fromAnyObjectToDBObject(Object value) throws Exception {
         BasicDBObject answer;
         try {
             Map<?, ?> m = OBJECT_MAPPER.convertValue(value, Map.class);
@@ -133,7 +136,7 @@ public final class MongoDbBasicConverters {
         } catch (Exception e) {
             LOG.warn("Conversion has fallen back to generic Object -> DBObject, but unable to convert type {}. Returning null. {}",
                     value.getClass().getCanonicalName(), e.getClass().getCanonicalName() + ": " + e.getMessage());
-            return null;
+            throw e;
         }
         return answer;
     }
