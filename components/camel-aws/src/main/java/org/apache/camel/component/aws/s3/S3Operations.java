@@ -20,5 +20,6 @@ public enum S3Operations {
 
     copyObject,
     deleteBucket,
-    listBuckets
+    listBuckets,
+    downloadLink
 }
