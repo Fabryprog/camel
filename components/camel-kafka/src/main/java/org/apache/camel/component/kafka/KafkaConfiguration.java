@@ -96,7 +96,9 @@ public class KafkaConfiguration {
     private Integer fetchWaitMaxMs = 500;
     @UriParam(label = "consumer")
     private boolean seekToBeginning;
-
+    @UriParam(label = "consumer", defaultValue = "")
+    private String partitions = "";
+    
     //Consumer configuration properties
     @UriParam(label = "consumer")
     private String consumerId;
@@ -1269,4 +1271,16 @@ public class KafkaConfiguration {
     public void setRecordMetadata(boolean recordMetadata) {
         this.recordMetadata = recordMetadata;
     }
+    
+    /**
+     * Partitions of the topic to use.
+     */
+    public void setPartitions(String partitions) {
+        this.partitions = partitions;
+    }
+
+    public String getPartitions() {
+        return partitions;
+    }
+    
 }

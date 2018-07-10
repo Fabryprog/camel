@@ -129,9 +129,24 @@ public class KafkaConsumer extends DefaultConsumer {
         @SuppressWarnings("unchecked")
         public void run() {
             try {
-                LOG.info("Subscribing {} to topic {}", threadId, topicName);
-                consumer.subscribe(Arrays.asList(topicName.split(",")));
+                boolean subscribe = false;
 
+                if(endpoint.getConfiguration().getPartitions() != null && !"".equals(endpoint.getConfiguration().getPartitions())) {
+                    LOG.info("Assign partition {} to topic {}", endpoint.getConfiguration().getPartitions(), topicName);
+                    
+                    List<TopicPartition> partitions = new ArrayList<>();
+                    for(String t : endpoint.getConfiguration().getPartitions().split(",")) {
+                        partitions.add(new TopicPartition(topicName, Integer.parseInt(t)));
+                    }
+                    consumer.assign(partitions); 
+                    
+                } else {
+                    LOG.info("Subscribing {} to topic {}", threadId, topicName);
+                    consumer.subscribe(Arrays.asList(topicName.split(",")));
+                    
+                    subscribe = true;
+                }
+                
                 if (endpoint.getConfiguration().isSeekToBeginning()) {
                     LOG.debug("{} is seeking to the beginning on topic {}", threadId, topicName);
                     // This poll to ensures we have an assigned partition otherwise seek won't work
@@ -163,8 +178,15 @@ public class KafkaConsumer extends DefaultConsumer {
                         }
                     }
                 }
-                LOG.info("Unsubscribing {} from topic {}", threadId, topicName);
-                consumer.unsubscribe();
+                
+                
+                if(subscribe) {
+                    LOG.info("Unsubscribing {} from topic {}", threadId, topicName);
+                    consumer.unsubscribe();
+                } else {
+                    consumer.assign(Collections.emptyList());
+                }
+                
             } catch (InterruptException e) {
                 getExceptionHandler().handleException("Interrupted while consuming " + threadId + " from kafka topic", e);
                 LOG.info("Unsubscribing {} from topic {}", threadId, topicName);
