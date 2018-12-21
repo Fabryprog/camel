@@ -33,6 +33,8 @@
         class="org.apache.camel.component.mqtt.MQTTTestSupport"
         factory-method="newComponent"/>
 
+  <bean id="mqttBean" class="org.apache.camel.component.mqtt.bean.MQTTBean" />
+  
   <camelContext id="basic-mqtt-component" xmlns="http://camel.apache.org/schema/spring" autoStartup="true">
 
     <endpoint id="mqtt-endpoint" uri="mqtt:mqtt-endpoint?publishTopicName=basicMqtt/message/basic-1"/>
@@ -40,6 +42,11 @@
     <route>
       <from uri="direct:in"/>
       <to uri="ref:mqtt-endpoint"/>
+    </route>
+    
+    <route>
+    	<from uri="direct:spring-dsl" />
+    	<to uri="bean:mqttBean?method=send" />
     </route>
   </camelContext>
 
